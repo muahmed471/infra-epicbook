@@ -11,6 +11,9 @@ variables:
 
 stages:
 
+# ==========================================
+# Stage 1: Terraform Validate
+# ==========================================
 - stage: Validate
   displayName: Terraform Validate
 
@@ -32,3 +35,29 @@ stages:
         terraform fmt -check -recursive
         terraform validate
       displayName: Terraform Init, Format and Validate
+
+
+# ==========================================
+# Stage 2: Terraform Plan
+# ==========================================
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Validate
+
+  jobs:
+  - job: TerraformPlan
+    displayName: Plan Terraform
+
+    steps:
+    - checkout: self
+
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: $(terraformVersion)
+
+    - script: |
+        cd terraform
+        terraform init -backend=false
+        terraform plan -out=tfplan
+      displayName: Terraform Plan
