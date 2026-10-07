@@ -7,7 +7,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  terraformVersion: '1.9.8'
+  terraformVersion: '1.14.0'
 
 stages:
 
