@@ -56,8 +56,18 @@ stages:
       inputs:
         terraformVersion: $(terraformVersion)
 
-    - script: |
-        cd terraform
-        terraform init -backend=false
-        terraform plan -out=tfplan
-      displayName: Terraform Plan
+    # Authenticate to Azure using existing service connection
+    - task: AzureCLI@2
+      displayName: Azure Login and Terraform Plan
+      inputs:
+        azureSubscription: 'AZURE-SC-EPICBOOK'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          cd terraform
+
+          echo "Initializing Terraform AzureRM backend..."
+          terraform init -reconfigure
+
+          echo "Running Terraform Plan..."
+          terraform plan -out=tfplan
